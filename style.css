@@ -1,0 +1,239 @@
+/* Neue Styles für die verbesserten Skalen */
+.scale-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.scale-bar {
+    position: relative;
+    display: flex;
+    height: 40px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0,0,0,0.7);
+    font-weight: 500;
+    font-size: 14px;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+}
+
+.marker {
+    position: absolute;
+    top: -20px;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.marker:after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #333;
+}
+
+.scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+}
+
+/* GFR Stadien */
+.g5 { background-color: #F44336; }
+.g4 { background-color: #FF5722; }
+.g3b { background-color: #FFC107; }
+.g3a { background-color: #FFEB3B; color: #333; }
+.g2 { background-color: #8BC34A; }
+.g1 { background-color: #4CAF50; }
+
+/* ACR Kategorien */
+.a1 { background-color: #4CAF50; }
+.a2 { background-color: #FFEB3B; color: #333; }
+.a3 { background-color: #F44336; }
+
+.scale-text {
+    font-size: 12px;
+    fill: #666;
+    font-weight: 500;
+}
+
+.marker-text {
+    font-size: 12px;
+    font-weight: 500;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
+}
+
+.marker {
+    transition: transform 0.2s;
+}
+
+.marker:hover {
+    transform: translateY(-2px);
+}
+
+/* Blut- und Urinwerte Karten */
+.blood-values {
+    background-color: rgba(255, 235, 235, 0.3);
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+.blood-values .card-header {
+    background-color: rgba(255, 235, 235, 0.5);
+    border-bottom-color: rgba(220, 53, 69, 0.3);
+}
+
+.urine-values {
+    background-color: rgba(255, 248, 220, 0.3);
+    border-color: rgba(255, 193, 7, 0.3);
+}
+
+.urine-values .card-header {
+    background-color: rgba(255, 248, 220, 0.5);
+    border-bottom-color: rgba(255, 193, 7, 0.3);
+}
+
+/* Bootstrap Anpassungen */
+.form-label {
+    font-weight: 500;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    font-weight: 500;
+}
+
+/* Bestehende Visualisierungs-Styles hier... */ 
+
+/* KDIGO Matrix Styles */
+.kdigo-matrix {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.matrix-table th,
+.matrix-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+    vertical-align: middle;
+    position: relative;
+}
+
+.matrix-table th {
+    background-color: #f8f9fa;
+    font-weight: 500;
+}
+
+.stage-label {
+    background-color: #f8f9fa;
+    font-weight: 500;
+    text-align: left !important;
+    width: 120px;
+}
+
+.stage-label small {
+    color: #666;
+    font-weight: normal;
+}
+
+/* Risiko-Farbkodierung */
+.risk-low {
+    background-color: #d3f9d8;
+    color: #2b8a3e;
+}
+
+.risk-moderate {
+    background-color: #fff3bf;
+    color: #9c6500;
+}
+
+.risk-high {
+    background-color: #ffe3e3;
+    color: #c92a2a;
+}
+
+.risk-very-high {
+    background-color: #ffc9c9;
+    color: #a61515;
+}
+
+/* Aktuelle Position markieren */
+td.current::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 3px solid currentColor;
+    pointer-events: none;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0,0,0,0.2); }
+    70% { box-shadow: 0 0 0 6px rgba(0,0,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+    .matrix-table {
+        font-size: 12px;
+    }
+    
+    .matrix-table th,
+    .matrix-table td {
+        padding: 8px;
+    }
+}
+
+/* Validierungsfehler */
+.validation-error {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    max-width: 350px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Patientendaten */
+.patient-data {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.125);
+} 

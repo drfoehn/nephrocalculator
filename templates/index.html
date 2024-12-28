@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GFR Rechner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>GFR Rechner</h1>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="krea">Kreatinin*:</label>
+                <div class="input-group">
+                    <input type="number" step="0.01" name="krea" required>
+                    <select name="krea_unit">
+                        <option value="mg/dl">mg/dl</option>
+                        <option value="umol/l">µmol/L</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="alter">Alter (Jahre)*:</label>
+                <input type="number" name="alter" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Geschlecht*:</label>
+                <select name="geschlecht" required>
+                    <option value="m">männlich</option>
+                    <option value="w">weiblich</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="cystatin">Cystatin C (mg/l):</label>
+                <input type="number" step="0.01" name="cystatin">
+            </div>
+            
+            <div class="form-group">
+                <h3>Urinwerte</h3>
+                <p class="hint">Geben Sie entweder die Ratios direkt ein oder die Einzelwerte für die automatische Berechnung.</p>
+                
+                <!-- Direkte Ratio-Eingaben -->
+                <div class="form-section">
+                    <h4>Direkte Ratio-Eingabe</h4>
+                    <div class="form-group">
+                        <label for="acr">Albumin-Kreatinin-Ratio (mg/g):</label>
+                        <input type="number" step="0.1" name="acr">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="prot_krea">Protein-Kreatinin-Ratio (mg/g):</label>
+                        <input type="number" step="0.1" name="prot_krea">
+                    </div>
+                </div>
+                
+                <!-- Einzelwert-Eingaben -->
+                <div class="form-section">
+                    <h4>Einzelwerte für Ratio-Berechnung</h4>
+                    <div class="form-group">
+                        <label for="albumin">Albumin im Urin:</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" name="albumin">
+                            <select name="albumin_unit">
+                                <option value="mg/dl">mg/dl</option>
+                                <option value="g/l">g/L</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="protein">Gesamtprotein im Urin:</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" name="protein">
+                            <select name="protein_unit">
+                                <option value="mg/dl">mg/dl</option>
+                                <option value="g/l">g/L</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="urin_krea">Kreatinin im Urin:</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" name="urin_krea">
+                            <select name="urin_krea_unit">
+                                <option value="mg/dl">mg/dl</option>
+                                <option value="umol/l">µmol/L</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit">Berechnen</button>
+        </form>
+
+        {% if results %}
+        <div class="results">
+            <h2>Ergebnisse</h2>
+            <p>CKD-EPI (2021): {{ results.ckd_epi }} ml/min/1.73m²</p>
+            
+            {% if results.ckd_epi_cys_krea %}
+            <p>CKD-EPI Kreatinin-Cystatin C: {{ results.ckd_epi_cys_krea }} ml/min/1.73m²</p>
+            {% endif %}
+            
+            {% if results.cys_gfr %}
+            <p>Cystatin C GFR: {{ results.cys_gfr }} ml/min/1.73m²</p>
+            {% endif %}
+            
+            {% if results.acr %}
+            <p>Albumin-Kreatinin-Ratio: {{ results.acr }} mg/g</p>
+            {% endif %}
+            
+            {% if results.pcr %}
+            <p>Protein-Kreatinin-Ratio: {{ results.pcr }} mg/g</p>
+            {% endif %}
+            
+            <p>CKD Stadium: {{ results.ckd_stage }}</p>
+            
+            <!-- GFR Visualisierung -->
+            <div class="visualization">
+                <h3>GFR Visualisierung</h3>
+                <svg width="100%" height="80" class="scale">
+                    <!-- Farbverlauf Hintergrund -->
+                    <defs>
+                        <linearGradient id="gfrGradient" x1="0%" y1="0%" x2="100%" y1="0%">
+                            <stop offset="0%" style="stop-color:#F44336"/>
+                            <stop offset="15%" style="stop-color:#FF5722"/>
+                            <stop offset="30%" style="stop-color:#FFC107"/>
+                            <stop offset="45%" style="stop-color:#FFEB3B"/>
+                            <stop offset="60%" style="stop-color:#8BC34A"/>
+                            <stop offset="100%" style="stop-color:#4CAF50"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Hauptskala -->
+                    <rect x="0" y="20" width="100%" height="20" fill="url(#gfrGradient)" rx="5"/>
+                    
+                    <!-- Markierungen -->
+                    <text x="0%" y="15" class="scale-text">0</text>
+                    <text x="15%" y="15" class="scale-text">15</text>
+                    <text x="30%" y="15" class="scale-text">30</text>
+                    <text x="45%" y="15" class="scale-text">45</text>
+                    <text x="60%" y="15" class="scale-text">60</text>
+                    <text x="100%" y="15" class="scale-text" text-anchor="end">90+</text>
+                    
+                    <!-- GFR Marker -->
+                    {% set gfr = results.ckd_epi %}
+                    {% set position = [((90 if gfr > 90 else gfr) / 90 * 100), 100]|min %}
+                    <polygon points="{{ position }}%,20 {{ position + 2 }}%,50 {{ position - 2 }}%,50" 
+                             fill="{{ results.gfr_color }}" class="marker"/>
+                    <text x="{{ position }}%" y="65" text-anchor="middle" class="marker-text">
+                        {{ gfr }} (CKD-EPI)
+                    </text>
+                    
+                    {% if results.ckd_epi_cys_krea %}
+                        {% set gfr = results.ckd_epi_cys_krea %}
+                        {% set position = [((90 if gfr > 90 else gfr) / 90 * 100), 100]|min %}
+                        <polygon points="{{ position }}%,20 {{ position + 2 }}%,50 {{ position - 2 }}%,50" 
+                                 fill="{{ get_gfr_color(gfr) }}" class="marker"/>
+                        <text x="{{ position }}%" y="65" text-anchor="middle" class="marker-text">
+                            {{ gfr }} (Krea-Cys)
+                        </text>
+                    {% endif %}
+                    
+                    {% if results.cys_gfr %}
+                        {% set gfr = results.cys_gfr %}
+                        {% set position = [((90 if gfr > 90 else gfr) / 90 * 100), 100]|min %}
+                        <polygon points="{{ position }}%,20 {{ position + 2 }}%,50 {{ position - 2 }}%,50" 
+                                 fill="{{ get_gfr_color(gfr) }}" class="marker"/>
+                        <text x="{{ position }}%" y="65" text-anchor="middle" class="marker-text">
+                            {{ gfr }} (Cys)
+                        </text>
+                    {% endif %}
+                </svg>
+                
+                {% if results.acr %}
+                <h3>Albumin-Kreatinin-Ratio</h3>
+                <svg width="100%" height="80" class="scale">
+                    <!-- ACR Farbverlauf -->
+                    <defs>
+                        <linearGradient id="acrGradient" x1="0%" y1="0%" x2="100%" y1="0%">
+                            <stop offset="0%" style="stop-color:#4CAF50"/>
+                            <stop offset="30%" style="stop-color:#FFEB3B"/>
+                            <stop offset="100%" style="stop-color:#F44336"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- ACR Skala -->
+                    <rect x="0" y="20" width="100%" height="20" fill="url(#acrGradient)" rx="5"/>
+                    
+                    <!-- Markierungen -->
+                    <text x="0%" y="15" class="scale-text">0</text>
+                    <text x="30%" y="15" class="scale-text">30</text>
+                    <text x="60%" y="15" class="scale-text">300</text>
+                    <text x="100%" y="15" class="scale-text" text-anchor="end">1000+</text>
+                    
+                    <!-- ACR Marker -->
+                    {% set acr = results.acr %}
+                    {% set position = [((300 if acr > 300 else acr) / 300 * 100), 100]|min %}
+                    <polygon points="{{ position }}%,20 {{ position + 2 }}%,50 {{ position - 2 }}%,50" 
+                             fill="{{ results.acr_color }}" class="marker"/>
+                    <text x="{{ position }}%" y="65" text-anchor="middle" class="marker-text">
+                        {{ acr }} mg/g
+                    </text>
+                </svg>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html> 
